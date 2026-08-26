@@ -3,885 +3,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrixSwap - Ultimate Omnitrix Sound FX</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <title>MimirPulse | Arc Testnet Prediction Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    
     <style>
-        :root { --theme-color: #00ff66; --bg-color: #020202; }
+        :root {
+            --bg-dark: #0a0c10;
+            --bg-card: #12161f;
+            --border-color: #2a3143;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background-color: var(--bg-color); margin: 0; height: 100vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; overflow: hidden; user-select: none;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        /* --- ALIEN X COSMIC GALAXY BACKGROUND --- */
-        .alienx-layer {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -2; pointer-events: none; background: #010204; overflow: hidden;
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .logo { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: 1px; margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
+        .logo span { color: var(--accent-blue); }
+        
+        .nav-item {
+            padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer;
+            color: var(--text-muted); font-weight: 600; transition: 0.2s; display: flex; justify-content: space-between;
+        }
+        .nav-item:hover, .nav-item.active { background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); }
+        .network-badge {
+            margin-top: auto; padding: 10px; background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px;
+            display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--accent-green); font-family: 'JetBrains Mono', monospace;
+        }
+        .dot { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 8px var(--accent-green); }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1; display: flex; flex-direction: column; overflow-y: auto;
         }
         
-        .nebula-swirl {
-            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(100,0,255,0.15) 0%, rgba(0,255,150,0.08) 30%, rgba(0,0,0,0.95) 70%);
-            animation: cosmicRotate 25s linear infinite;
+        .header {
+            padding: 20px 40px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-card);
         }
-        @keyframes cosmicRotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .search-bar {
+            display: flex; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 8px; padding: 5px 10px; width: 400px;
         }
-
-        .star {
-            position: absolute; background: #ffffff; border-radius: 50%;
-            animation: starTwinkle var(--duration) infinite ease-in-out alternate;
+        .search-bar input {
+            background: transparent; border: none; outline: none; color: #fff; width: 100%; padding: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px;
         }
-        @keyframes starTwinkle {
-            0% { opacity: 0.2; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1.4); box-shadow: 0 0 8px #ffffff, 0 0 15px #60a5fa; }
+        .search-bar button {
+            background: var(--accent-blue); color: #fff; border: none; border-radius: 5px; padding: 8px 15px; cursor: pointer; font-weight: 600; transition: 0.2s;
         }
+        .search-bar button:hover { background: #2563eb; }
 
-        .bg-grid {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(96, 165, 250, 0.03) 3px, transparent 4px);
-            pointer-events: none;
+        .wallet-btn {
+            background: transparent; border: 1px solid var(--accent-blue); color: var(--accent-blue);
+            padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-family: 'JetBrains Mono', monospace;
         }
+        .wallet-btn:hover { background: rgba(59, 130, 246, 0.1); }
 
-        /* --- WALLET HUD --- */
-        .wallet-hud {
-            position: absolute; top: 20px; right: 20px; padding: 10px 20px; border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.8); color: #fff; font-family: 'Share Tech Mono', monospace; font-size: 14px;
-            border-radius: 5px; cursor: pointer; z-index: 100; display: flex; align-items: center; gap: 10px; transition: all 0.3s ease;
+        .dashboard-content { padding: 40px; }
+        .section-title { font-size: 18px; color: var(--text-muted); margin-bottom: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* METRICS CARDS */
+        .metrics-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px;
         }
-        .wallet-hud:hover { border-color: var(--theme-color); box-shadow: 0 0 15px rgba(0,255,102,0.3); }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ff3333; }
-        .wallet-hud.connected .status-dot { background: #00ff66; box-shadow: 0 0 8px #00ff66; }
-
-        /* --- BACKGROUND --- */
-        .bg-title { position: absolute; top: 12%; font-size: 42px; font-weight: 900; letter-spacing: 12px; color: var(--theme-color); opacity: 0.9; text-shadow: 0 0 20px var(--theme-color); z-index: 5; transition: opacity 0.3s; }
-        .bg-orb { position: absolute; top: 50%; left: 50%; width: 500px; height: 500px; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, var(--theme-color) 0%, transparent 70%); opacity: 0.1; z-index: 1; pointer-events: none; }
-
-        /* --- PROJECTOR BASE --- */
-        .projector-wrap { position: absolute; bottom: 50px; display: flex; flex-direction: column; align-items: center; cursor: pointer; z-index: 50; transition: opacity 0.3s; }
-        .projector { width: 80px; height: 25px; background: #fff; border-radius: 50%; box-shadow: 0 0 30px var(--theme-color), 0 0 60px var(--theme-color); }
-        .projector-text { margin-top: 12px; color: var(--theme-color); font-size: 12px; letter-spacing: 4px; }
-        .beam { position: absolute; bottom: 60px; width: 350px; height: 400px; background: linear-gradient(to top, rgba(255,255,255,0.1), transparent); clip-path: polygon(50% 100%, 0 0, 100% 0); opacity: 0; transform-origin: bottom center; transition: opacity 0.5s; pointer-events: none; }
-
-        /* --- OMNITRIX DIAL UI --- */
-        .dial-wrapper {
-            position: absolute; top: 42%; left: 50%;
-            transform: translate(-50%, -50%) scale(0.5);
-            width: 340px; height: 340px;
-            opacity: 0; pointer-events: none; z-index: 60;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .metric-card {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px;
         }
+        .metric-card h4 { color: var(--text-muted); font-size: 13px; margin-bottom: 10px; font-weight: 600; }
+        .metric-card .value { font-size: 28px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+        .metric-card .change { font-size: 12px; margin-top: 5px; display: inline-block; }
+        .change.pos { color: var(--accent-green); }
+        .change.neg { color: var(--accent-red); }
 
-        body.is-on .dial-wrapper { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
-
-        .dial-selector {
-            position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent;
-            border-bottom: 20px solid var(--theme-color); z-index: 20;
-            filter: drop-shadow(0 -4px 8px var(--theme-color));
+        /* DATA TABLES */
+        .table-container {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;
         }
-
-        .dial-ring {
-            width: 100%; height: 100%; border-radius: 50%; border: 35px solid rgba(0, 255, 102, 0.2);
-            position: absolute; top: 0; left: 0; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            box-shadow: 0 0 40px rgba(0,255,102,0.3), inset 0 0 40px rgba(0,255,102,0.3); box-sizing: border-box;
-        }
-
-        .dial-center-text {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 22px; font-weight: 900; color: var(--theme-color); letter-spacing: 2px;
-            text-shadow: 0 0 15px var(--theme-color); text-align: center; cursor: pointer;
-            width: 130px; height: 130px; background: rgba(2, 5, 2, 0.95); border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; border: 2px solid var(--theme-color);
-            box-shadow: inset 0 0 20px rgba(0,255,102,0.2), 0 0 20px rgba(0,255,102,0.2);
-            transition: 0.3s; z-index: 10;
-        }
-        .dial-center-text:hover { background: rgba(0, 255, 102, 0.15); transform: translate(-50%, -50%) scale(1.05); }
-
-        .dial-item {
-            position: absolute; top: 50%; left: 50%; width: 44px; height: 44px;
-            margin-top: -22px; margin-left: -22px; background: #0b1a0f; border: 2px solid var(--theme-color);
-            border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px;
-            box-shadow: 0 0 12px var(--theme-color); color: #fff; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
-        .item-0 { transform: rotate(0deg) translateY(-118px) rotate(0deg); }   /* SWAP */
-        .item-1 { transform: rotate(60deg) translateY(-118px) rotate(-60deg); }  /* POOL */
-        .item-2 { transform: rotate(120deg) translateY(-118px) rotate(-120deg); } /* LEND */
-        .item-3 { transform: rotate(180deg) translateY(-118px) rotate(-180deg); } /* BORROW */
-        .item-4 { transform: rotate(240deg) translateY(-118px) rotate(-240deg); } /* FAUCET */
-        .item-5 { transform: rotate(300deg) translateY(-118px) rotate(-300deg); } /* ABOUT */
-
-        body.is-on .beam { opacity: 1; }
-        body.is-on .bg-title { opacity: 0.15; }
-
-        /* --- TERMINAL STYLES --- */
-        .terminal-box {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
-            width: 420px; max-height: 85vh; overflow-y: auto; background: rgba(5, 15, 5, 0.95); border: 2px solid var(--theme-color);
-            box-shadow: 0 0 30px rgba(0,255,102,0.2), inset 0 0 20px rgba(0,255,102,0.1);
-            border-radius: 15px; padding: 25px; z-index: 200; opacity: 0; pointer-events: none;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            font-family: 'Share Tech Mono', monospace; backdrop-filter: blur(10px); color: #fff;
-        }
-        .terminal-box.open { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
-        .terminal-header { text-align: center; font-size: 18px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: var(--theme-color); letter-spacing: 2px; margin-bottom: 20px; text-shadow: 0 0 10px var(--theme-color); }
-        .close-btn { position: absolute; top: 15px; right: 15px; background: transparent; color: #aaa; border: none; cursor: pointer; font-size: 20px; }
-        .close-btn:hover { color: #fff; }
-
-        .swap-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; margin-bottom: 15px; position: relative; }
-        .swap-label-row { display: flex; justify-content: space-between; font-size: 12px; color: #aaa; margin-bottom: 8px; }
-        .max-btn { background: rgba(0,255,102,0.2); border: 1px solid var(--theme-color); color: var(--theme-color); border-radius: 4px; padding: 2px 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 10px; margin-left: 10px; }
-        .swap-row { display: flex; justify-content: space-between; align-items: center; }
-        .swap-row input { background: transparent; border: none; color: #fff; font-size: 26px; width: 60%; font-family: 'Share Tech Mono', monospace; outline: none; }
-        .swap-row select { background: rgba(0,255,102,0.1); color: var(--theme-color); border: 1px solid var(--theme-color); padding: 8px; border-radius: 8px; font-weight: bold; font-family: 'Orbitron', sans-serif; outline: none; cursor: pointer; }
-        .swap-arrow { position: absolute; left: 50%; bottom: -20px; transform: translateX(-50%); width: 30px; height: 30px; background: #111; border: 1px solid var(--theme-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--theme-color); z-index: 10; cursor: pointer; }
-        .price-impact { font-size: 12px; color: #888; text-align: center; margin-top: -5px; margin-bottom: 10px; min-height: 15px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(255,255,255,0.02); padding: 15px 20px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border-color); }
+        td { padding: 15px 20px; border-bottom: 1px solid var(--border-color); font-size: 14px; font-family: 'JetBrains Mono', monospace; }
+        tr:hover { background: rgba(255,255,255,0.02); cursor: pointer; }
+        tr:last-child td { border-bottom: none; }
         
-        .execute-btn { width: 100%; padding: 14px; background: var(--theme-color); color: #000; border: none; border-radius: 10px; font-size: 14px; font-weight: 900; font-family: 'Orbitron', sans-serif; cursor: pointer; transition: 0.3s; box-shadow: 0 0 15px rgba(0,255,102,0.4); text-align: center; display: block; text-decoration: none; }
-        .execute-btn:hover { box-shadow: 0 0 25px var(--theme-color); }
-        .execute-btn.ghost { background: transparent; border: 1px solid var(--theme-color); color: var(--theme-color); }
-
-        .token-row { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
-        .token-row-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; }
-        .token-chip { display: flex; align-items: center; gap: 8px; font-weight: bold; }
-        .token-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #000; font-weight: bold; }
-        .token-stats { font-size: 11px; color: #aaa; text-align: right; line-height: 1.3; }
-        .btn-row { display: flex; gap: 8px; margin-top: 10px; }
-
-        .faucet-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; margin-bottom: 12px; }
-        .faucet-title { font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
-        .faucet-desc { font-size: 12px; color: #aaa; margin-bottom: 12px; line-height: 1.4; }
-        .faucet-note { font-size: 11px; color: #ffea00; background: rgba(255,234,0,0.08); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,234,0,0.2); line-height: 1.4; }
-
-        .flash { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--theme-color); opacity: 0; pointer-events: none; z-index: 999; }
-        .flash.fire { animation: slamFlash 0.5s ease-out; }
-        @keyframes slamFlash { 0% { opacity: 0; } 10% { opacity: 1; } 100% { opacity: 0; } }
+        .market-name { font-family: 'Inter', sans-serif; font-weight: 600; color: #fff; }
+        .prob-bar {
+            width: 100px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 10px;
+        }
+        .prob-fill { height: 100%; background: var(--accent-blue); }
         
-        body.terminal-active .dial-wrapper, body.terminal-active .beam, body.terminal-active .projector-wrap { opacity: 0; pointer-events: none; }
+        .tag-yes { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        .tag-no { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+
     </style>
 </head>
 <body>
 
-    <div class="alienx-layer">
-        <div class="nebula-swirl"></div>
-    </div>
-    <div class="bg-grid"></div>
-
-    <div class="wallet-hud" id="wallet-btn">
-        <div class="status-dot"></div>
-        <span id="wallet-address">CONNECT WALLET</span>
-    </div>
-
-    <div class="bg-orb"></div>
-    <div class="bg-title">TRIXSWAP</div>
-    <div class="beam" id="beam"></div>
-
-    <!-- OMNITRIX DIAL -->
-    <div class="dial-wrapper" id="dial-wrapper">
-        <div class="dial-selector"></div>
-        <div class="dial-ring" id="dial-ring">
-            <div class="dial-item item-0">⇆</div>
-            <div class="dial-item item-1">💧</div>
-            <div class="dial-item item-2">🏦</div>
-            <div class="dial-item item-3">💸</div>
-            <div class="dial-item item-4">🚰</div>
-            <div class="dial-item item-5">ℹ️</div>
+    <div class="sidebar">
+        <div class="logo">Mimir<span>Pulse</span></div>
+        <div class="nav-item active">Overview</div>
+        <div class="nav-item">Markets Scanner</div>
+        <div class="nav-item">Wallet Profiler</div>
+        <div class="nav-item">API & Docs <span>↗</span></div>
+        
+        <div class="network-badge">
+            <div class="dot"></div>
+            Arc Testnet Active
         </div>
-        <div class="dial-center-text" id="center-text" onclick="executeSelection()">SWAP</div>
     </div>
 
-    <div class="projector-wrap" id="projector">
-        <div class="projector"></div>
-        <div class="projector-text" id="p-text">TAP TO INITIALIZE</div>
-    </div>
-
-    <!-- SWAP TERMINAL -->
-    <div class="terminal-box" id="swap-terminal">
-        <button class="close-btn" onclick="closeTerminals()">✖</button>
-        <div class="terminal-header">ARC ROUTING PROTOCOL</div>
-        <div class="swap-box">
-            <div class="swap-label-row">
-                <span>YOU PAY</span>
-                <span>Balance: <span id="bal-from">0.0000</span> <button class="max-btn" id="max-btn">MAX</button></span>
+    <div class="main-content">
+        <div class="header">
+            <div class="search-bar">
+                <input type="text" id="wallet-search" placeholder="Search any 0x... address to analyze trades">
+                <button onclick="analyzeWallet()">ANALYZE</button>
             </div>
-            <div class="swap-row">
-                <input type="number" placeholder="0.0" id="pay-input">
-                <select id="pay-token">
-                    <option value="USDC">USDC</option>
-                    <option value="EURC">EURC</option>
-                    <option value="CIRBTC">CIRBTC</option>
-                </select>
-            </div>
-            <div class="swap-arrow" id="flip-btn">↕</div>
+            <button class="wallet-btn" id="connect-btn" onclick="connectWallet()">Connect Wallet</button>
         </div>
-        <div class="swap-box" style="margin-top: -5px;">
-            <div class="swap-label-row">
-                <span>YOU RECEIVE</span>
-                <span>Balance: <span id="bal-to">0.0000</span></span>
-            </div>
-            <div class="swap-row">
-                <input type="number" placeholder="0.0" id="receive-input" readonly>
-                <select id="receive-token">
-                    <option value="EURC">EURC</option>
-                    <option value="USDC">USDC</option>
-                    <option value="CIRBTC">CIRBTC</option>
-                </select>
-            </div>
-        </div>
-        <div class="price-impact" id="rateLine"></div>
-        <button class="execute-btn" id="execute-swap-btn">CONNECT WALLET</button>
-    </div>
 
-    <!-- POOL TERMINAL -->
-    <div class="terminal-box" id="pool-terminal">
-        <button class="close-btn" onclick="closeTerminals()">✖</button>
-        <div class="terminal-header">LIQUIDITY PROTOCOL</div>
-        <div class="swap-box">
-            <div class="swap-label-row"><span>SELECT POOL</span></div>
-            <div class="swap-row" style="margin-bottom: 10px;">
-                <select id="poolSelect" style="width: 100%; padding: 10px;">
-                    <option value="USDC-EURC">USDC / EURC</option>
-                    <option value="USDC-CIRBTC">USDC / CIRBTC</option>
-                    <option value="EURC-CIRBTC">EURC / CIRBTC</option>
-                </select>
+        <div class="dashboard-content">
+            <div class="section-title">Protocol Overview (Mimir Markets)</div>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h4>TOTAL VOLUME (24H)</h4>
+                    <div class="value">$142,504</div>
+                    <div class="change pos">+12.5% vs yesterday</div>
+                </div>
+                <div class="metric-card">
+                    <h4>ACTIVE MARKETS</h4>
+                    <div class="value">34</div>
+                    <div class="change pos">2 new markets resolved</div>
+                </div>
+                <div class="metric-card">
+                    <h4>UNIQUE TRADERS</h4>
+                    <div class="value">1,208</div>
+                    <div class="change pos">+54 this week</div>
+                </div>
+                <div class="metric-card">
+                    <h4>ARC NETWORK GAS</h4>
+                    <div class="value">0.001 Gwei</div>
+                    <div class="change pos">Optimal</div>
+                </div>
             </div>
-        </div>
-        <div class="swap-box">
-            <div class="swap-label-row">
-                <span id="liqTokenALabel">USDC</span>
-                <span>Balance: <span id="liqBalanceA">0.0000</span></span>
+
+            <div class="section-title" id="table-title">Top Trending Markets</div>
+            <div class="table-container">
+                <table id="market-table">
+                    <thead>
+                        <tr>
+                            <th>Market Question</th>
+                            <th>Volume</th>
+                            <th>Current Odds (YES)</th>
+                            <th>Resolution Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Default Market Data -->
+                        <tr>
+                            <td class="market-name">Will Arc Mainnet launch before Q1 2027?</td>
+                            <td>$45,210</td>
+                            <td>
+                                65% 
+                                <div class="prob-bar"><div class="prob-fill" style="width: 65%;"></div></div>
+                            </td>
+                            <td>Dec 31, 2026</td>
+                            <td><span class="tag-yes">LIVE</span></td>
+                        </tr>
+                        <tr>
+                            <td class="market-name">Will ETH cross $4,000 by Sept 2026?</td>
+                            <td>$32,100</td>
+                            <td>
+                                32% 
+                                <div class="prob-bar"><div class="prob-fill" style="width: 32%; background: var(--accent-red);"></div></div>
+                            </td>
+                            <td>Sep 30, 2026</td>
+                            <td><span class="tag-yes">LIVE</span></td>
+                        </tr>
+                        <tr>
+                            <td class="market-name">Will Bitcoin hit $100k in 2026?</td>
+                            <td>$89,050</td>
+                            <td>
+                                81% 
+                                <div class="prob-bar"><div class="prob-fill" style="width: 81%;"></div></div>
+                            </td>
+                            <td>Dec 31, 2026</td>
+                            <td><span class="tag-yes">LIVE</span></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="swap-row"><input type="number" placeholder="0.0" id="liqAmountA"></div>
-        </div>
-        <div class="swap-box" style="margin-top: -5px;">
-            <div class="swap-label-row">
-                <span id="liqTokenBLabel">EURC</span>
-                <span>Balance: <span id="liqBalanceB">0.0000</span></span>
-            </div>
-            <div class="swap-row"><input type="number" placeholder="0.0" id="liqAmountB"></div>
-        </div>
-        <div class="price-impact" id="liqReservesLine">Reserves: Loading...</div>
-        <button class="execute-btn" id="liqActionBtn">CONNECT WALLET</button>
-    </div>
-
-    <!-- LEND TERMINAL -->
-    <div class="terminal-box" id="lend-terminal">
-        <button class="close-btn" onclick="closeTerminals()">✖</button>
-        <div class="terminal-header">LENDING VAULT</div>
-        <div id="lendRows">Loading...</div>
-    </div>
-
-    <!-- BORROW TERMINAL -->
-    <div class="terminal-box" id="borrow-terminal">
-        <button class="close-btn" onclick="closeTerminals()">✖</button>
-        <div class="terminal-header">COLLATERAL & BORROW</div>
-        <div class="swap-box" style="font-size: 12px; line-height: 1.5;">
-            <div>Collateral Value: <span id="collateralValueUSD" style="color:var(--theme-color)">$0.00</span></div>
-            <div>Borrow Value: <span id="borrowValueUSD" style="color:#ff3366">$0.00</span></div>
-            <div>Max Borrowable: <span id="maxBorrowUSD" style="color:#ffea00">$0.00</span></div>
-        </div>
-        <div style="font-size: 13px; font-weight:bold; margin-bottom:8px; color:var(--theme-color);">1. Deposit Collateral</div>
-        <div id="collateralRows">Loading...</div>
-        <div style="font-size: 13px; font-weight:bold; margin-top:15px; margin-bottom:8px; color:#ffea00;">2. Borrow Assets</div>
-        <div id="borrowRows">Loading...</div>
-    </div>
-
-    <!-- FAUCET TERMINAL -->
-    <div class="terminal-box" id="faucet-terminal">
-        <button class="close-btn" onclick="closeTerminals()">✖</button>
-        <div class="terminal-header">GET TESTNET ASSETS</div>
-        <div class="faucet-card">
-            <div class="faucet-title"><span style="background:var(--theme-color); color:#000; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">1</span> Add Arc Testnet</div>
-            <div class="faucet-desc">Adds the Arc Testnet network to your wallet automatically.</div>
-            <button class="execute-btn" onclick="connectWallet()">Add Arc Testnet to Wallet</button>
-        </div>
-        <div class="faucet-card">
-            <div class="faucet-title"><span style="background:var(--theme-color); color:#000; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">2</span> Claim Test Tokens</div>
-            <div class="faucet-desc">Get free testnet USDC and EURC from Circle's official faucet.</div>
-            <a href="https://faucet.circle.com/" target="_blank" class="execute-btn" style="background: transparent; border: 1px solid var(--theme-color); color: #fff;">Open Circle Faucet ↗</a>
-        </div>
-        <div class="faucet-note">
-            cirBTC does not have a public faucet yet. If you need it for testing, reach out via links in the About tab.
         </div>
     </div>
-
-    <div class="flash" id="flash"></div>
 
     <script>
-        const alienLayer = document.querySelector('.alienx-layer');
-        for (let i = 0; i < 70; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            const size = Math.random() * 3 + 1;
-            star.style.width = `${size}px`;
-            star.style.height = `${size}px`;
-            star.style.top = `${Math.random() * 100}vh`;
-            star.style.left = `${Math.random() * 100}vw`;
-            star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
-            star.style.animationDelay = `${Math.random() * 3}s`;
-            alienLayer.appendChild(star);
-        }
-
-        // --- AUTHENTIC BEN 10 OMNITRIX WEB AUDIO FX ---
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        // 1. WATCH ON / POWER UP SOUND (High-tech energy surge)
-        function playWatchOnSound() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(150, now);
-            osc.frequency.exponentialRampToValueAtTime(1200, now + 0.4);
-            
-            gain.gain.setValueAtTime(0.12, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(now);
-            osc.stop(now + 0.45);
-        }
-
-        // 2. DIAL SCROLL / ALIEN SWITCH SOUND (Classic mechanical gear + laser click)
-        function playTickSound() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(900, now);
-            osc.frequency.exponentialRampToValueAtTime(300, now + 0.05);
-            
-            gain.gain.setValueAtTime(0.1, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(now);
-            osc.stop(now + 0.06);
-        }
-
-        // 3. WATCH STAMP / SLAM SOUND (Heavy metal lock + energy shockwave boom)
-        function playSlamSound() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const now = audioCtx.currentTime;
-            
-            // Sub-bass impact
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(250, now);
-            osc.frequency.exponentialRampToValueAtTime(40, now + 0.3);
-            
-            gain.gain.setValueAtTime(0.3, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(now);
-            osc.stop(now + 0.35);
-
-            // Metallic clang overlay
-            const noiseNode = audioCtx.createBufferSource();
-            const bufferSize = audioCtx.sampleRate * 0.2;
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = Math.random() * 2 - 1;
-            }
-            noiseNode.buffer = buffer;
-            const filter = audioCtx.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.frequency.value = 1000;
-            
-            const noiseGain = audioCtx.createGain();
-            noiseGain.gain.setValueAtTime(0.15, now);
-            noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-
-            noiseNode.connect(filter);
-            filter.connect(noiseGain);
-            noiseGain.connect(audioCtx.destination);
-            noiseNode.start(now);
-            noiseNode.stop(now + 0.2);
-        }
-
-        const MULTISWAP_ADDRESS = "0xC71b9D161780AbA17D60b86D5d2Fb07F98DD5279";
-        const LENDING_ADDRESS = "0x5E388Bc4596504984A88cbe7a8F0522122bec6c0";
-        const ARC_CHAIN_HEX = "0x4ced5a"; 
-        const MAX_UINT = ethers.constants.MaxUint256;
-
-        const TOKENS = {
-            USDC:   { address: "0x3600000000000000000000000000000000000000", decimals: 6, color: "#2775CA" },
-            EURC:   { address: "0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a", decimals: 6, color: "#1952A3" },
-            CIRBTC: { address: "0xf0C4a4CE82A5746AbAAd9425360Ab04fbBA432BF", decimals: 8, color: "#F7931A" }
-        };
-        const TOKEN_LIST = Object.keys(TOKENS);
-
-        const ERC20_ABI = ["function balanceOf(address) view returns (uint256)", "function allowance(address,address) view returns (uint256)", "function approve(address,uint256) returns (bool)"];
-        const SWAP_ABI = [
-            "function getReserves(address,address) view returns (uint256,uint256)", 
-            "function getAmountOut(uint256,uint256,uint256) pure returns (uint256)", 
-            "function swap(address,address,uint256) returns (uint256)",
-            "function addLiquidity(address,address,uint256,uint256)"
-        ];
-        const LENDING_ABI = [
-            "function tokenPriceUSD(address) view returns (uint256)",
-            "function deposit(address,uint256)", "function withdraw(address,uint256)", "function claimInterest(address)",
-            "function depositCollateral(address,uint256)", "function withdrawCollateral(address,uint256)",
-            "function borrow(address,uint256)", "function repay(address,uint256)",
-            "function getDepositBalance(address,address) view returns (uint256,uint256)",
-            "function getBorrowBalance(address,address) view returns (uint256,uint256)",
-            "function collateral(address,address) view returns (uint256)",
-            "function getCollateralValueUSD(address) view returns (uint256)",
-            "function getBorrowValueUSD(address) view returns (uint256)",
-            "function getMaxBorrowableUSD(address) view returns (uint256)"
-        ];
-
         let provider, signer, userAddress;
-        let balances = {};
-        
-        const payInput = document.getElementById('pay-input');
-        const receiveInput = document.getElementById('receive-input');
-        const payTokenSelect = document.getElementById('pay-token');
-        const receiveTokenSelect = document.getElementById('receive-token');
-        const executeBtn = document.getElementById('execute-swap-btn');
-        const rateLine = document.getElementById('rateLine');
+        const ARC_CHAIN_HEX = "0x4ced5a"; // Arc Testnet Chain ID
 
         async function connectWallet() {
+            const btn = document.getElementById('connect-btn');
             if (typeof window.ethereum !== 'undefined') {
                 try {
-                    executeBtn.innerText = "CONNECTING...";
+                    btn.innerText = "Connecting...";
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     userAddress = accounts[0];
                     provider = new ethers.providers.Web3Provider(window.ethereum);
-
+                    
+                    // Switch to Arc Testnet
                     const net = await provider.getNetwork();
                     if (net.chainId !== 5042002) {
                         try {
                             await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: ARC_CHAIN_HEX }] });
-                        } catch (switchErr) {
-                            if (switchErr.code === 4902) {
-                                await window.ethereum.request({
-                                    method: "wallet_addEthereumChain",
-                                    params: [{ chainId: ARC_CHAIN_HEX, chainName: "Arc Testnet", nativeCurrency: { name: "USDC", symbol: "USDC", decimals: 18 }, rpcUrls: ["https://rpc.testnet.arc.network"], blockExplorerUrls: ["https://testnet.arcscan.app"] }]
-                                });
-                            }
+                        } catch (e) {
+                            await window.ethereum.request({
+                                method: "wallet_addEthereumChain",
+                                params: [{ chainId: ARC_CHAIN_HEX, chainName: "Arc Testnet", nativeCurrency: { name: "USDC", symbol: "USDC", decimals: 18 }, rpcUrls: ["https://rpc.testnet.arc.network"] }]
+                            });
                         }
                     }
 
-                    signer = provider.getSigner();
-                    document.getElementById('wallet-btn').classList.add('connected');
-                    document.getElementById('wallet-address').innerText = userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
-                    
-                    await refreshBalances();
-                    updateActionState();
-                    renderLiquidityPanel();
-                    renderLendRows();
-                    renderBorrowRows();
-                } catch (error) { executeBtn.innerText = "CONNECT WALLET"; }
-            } else { alert("Please install MetaMask!"); }
-        }
-        document.getElementById('wallet-btn').addEventListener('click', () => { if (!userAddress) connectWallet(); });
-
-        function tokenContract(sym, runner) { return new ethers.Contract(TOKENS[sym].address, ERC20_ABI, runner); }
-        function parse(sym, val) { return ethers.utils.parseUnits(val.toString(), TOKENS[sym].decimals); }
-        function fmt(sym, raw) { return Number(ethers.utils.formatUnits(raw, TOKENS[sym].decimals)); }
-
-        async function refreshBalances() {
-            if (!userAddress) return;
-            for (const sym of TOKEN_LIST) {
-                try {
-                    const bal = await tokenContract(sym, provider).balanceOf(userAddress);
-                    balances[sym] = fmt(sym, bal);
-                } catch(e) { balances[sym] = 0; }
-            }
-            document.getElementById('bal-from').innerText = balances[payTokenSelect.value]?.toFixed(4) || "0.0000";
-            document.getElementById('bal-to').innerText = balances[receiveTokenSelect.value]?.toFixed(4) || "0.0000";
-        }
-
-        payTokenSelect.addEventListener('change', () => { if(payTokenSelect.value === receiveTokenSelect.value) receiveTokenSelect.value = TOKEN_LIST.find(t => t !== payTokenSelect.value); refreshBalances(); onAmountChange(); });
-        receiveTokenSelect.addEventListener('change', () => { if(receiveTokenSelect.value === payTokenSelect.value) payTokenSelect.value = TOKEN_LIST.find(t => t !== payTokenSelect.value); refreshBalances(); onAmountChange(); });
-        document.getElementById('flip-btn').addEventListener('click', () => { const temp = payTokenSelect.value; payTokenSelect.value = receiveTokenSelect.value; receiveTokenSelect.value = temp; refreshBalances(); onAmountChange(); });
-        document.getElementById('max-btn').addEventListener('click', () => { if(balances[payTokenSelect.value]) { payInput.value = balances[payTokenSelect.value]; onAmountChange(); }});
-
-        let estimateTimer;
-        payInput.addEventListener('input', () => { clearTimeout(estimateTimer); estimateTimer = setTimeout(onAmountChange, 300); });
-
-        async function onAmountChange() {
-            const val = payInput.value; const fromSym = payTokenSelect.value; const toSym = receiveTokenSelect.value;
-            if (!val || Number(val) <= 0 || !provider) { receiveInput.value = ""; rateLine.innerText = ""; updateActionState(); return; }
-            try {
-                const swap = new ethers.Contract(MULTISWAP_ADDRESS, SWAP_ABI, provider);
-                const [reserveIn, reserveOut] = await swap.getReserves(TOKENS[fromSym].address, TOKENS[toSym].address);
-                if (reserveIn.eq(0) || reserveOut.eq(0)) { rateLine.innerText = "Pool has no liquidity."; updateActionState(); return; }
-                const amtIn = parse(fromSym, val); const out = await swap.getAmountOut(amtIn, reserveIn, reserveOut); const outFormatted = fmt(toSym, out);
-                receiveInput.value = outFormatted.toFixed(6); rateLine.innerText = `1 ${fromSym} ≈ ${(outFormatted / Number(val)).toFixed(6)} ${toSym}`;
-            } catch (err) { receiveInput.value = ""; rateLine.innerText = "Route unavailable."; }
-            updateActionState();
-        }
-
-        async function updateActionState() {
-            if (!userAddress) { executeBtn.innerText = "CONNECT WALLET"; executeBtn.classList.remove('warn'); executeBtn.onclick = connectWallet; return; }
-            const val = payInput.value;
-            if (!val || Number(val) <= 0) { executeBtn.innerText = "ENTER AN AMOUNT"; executeBtn.disabled = true; executeBtn.classList.remove('warn'); return; }
-            executeBtn.disabled = false;
-            try {
-                const c = tokenContract(payTokenSelect.value, provider); const allowance = await c.allowance(userAddress, MULTISWAP_ADDRESS); const amtIn = parse(payTokenSelect.value, val);
-                if (allowance.lt(amtIn)) { executeBtn.innerText = `APPROVE ${payTokenSelect.value}`; executeBtn.classList.add('warn'); executeBtn.onclick = doApprove; } 
-                else { executeBtn.innerText = "CONFIRM SWAP"; executeBtn.classList.remove('warn'); executeBtn.onclick = doSwap; }
-            } catch(e) {}
-        }
-
-        async function doApprove() {
-            executeBtn.disabled = true; executeBtn.innerText = "APPROVING...";
-            try { const c = tokenContract(payTokenSelect.value, signer); const tx = await c.approve(MULTISWAP_ADDRESS, MAX_UINT); await tx.wait(); updateActionState(); } catch(e) { updateActionState(); }
-        }
-
-        async function doSwap() {
-            executeBtn.disabled = true; executeBtn.innerText = "CONFIRMING TX...";
-            try {
-                const swap = new ethers.Contract(MULTISWAP_ADDRESS, SWAP_ABI, signer); const amtIn = parse(payTokenSelect.value, payInput.value);
-                const tx = await swap.swap(TOKENS[payTokenSelect.value].address, TOKENS[receiveTokenSelect.value].address, amtIn); await tx.wait();
-                alert("Swap Successful!"); payInput.value = ""; receiveInput.value = ""; rateLine.innerText = ""; await refreshBalances(); updateActionState();
-            } catch(e) { updateActionState(); alert("Swap Failed!"); }
-        }
-
-        async function ensureApproval(sym, spender, neededAmount) {
-            const c = tokenContract(sym, signer);
-            const allowance = await c.allowance(userAddress, spender);
-            if (allowance.lt(neededAmount)) {
-                const tx = await c.approve(spender, MAX_UINT);
-                await tx.wait();
+                    btn.innerText = userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
+                    btn.style.background = "rgba(59, 130, 246, 0.1)";
+                } catch (error) {
+                    btn.innerText = "Connect Wallet";
+                    alert("Connection failed.");
+                }
+            } else {
+                alert("Please install MetaMask to use Web3 tools.");
             }
         }
 
-        async function renderLendRows() {
-            const container = document.getElementById('lendRows');
-            if (!userAddress) { container.innerHTML = '<div style="color:#aaa; text-align:center;">Connect wallet to view vault.</div>'; return; }
-            const lending = new ethers.Contract(LENDING_ADDRESS, LENDING_ABI, provider);
-            let html = "";
-            for (const sym of TOKEN_LIST) {
-                let principal = 0n, interest = 0n;
-                try {
-                    const res = await lending.getDepositBalance(userAddress, TOKENS[sym].address);
-                    principal = res[0]; interest = res[1];
-                } catch(e) {}
-                html += `
-                <div class="token-row">
-                    <div class="token-row-head">
-                        <div class="token-chip"><span class="token-dot" style="background:${TOKENS[sym].color}">${sym[0]}</span>${sym}</div>
-                        <div class="token-stats">Deposited: ${fmt(sym, principal).toFixed(4)}<br>Interest: ${fmt(sym, interest).toFixed(6)}</div>
-                    </div>
-                    <div class="swap-row"><input type="number" placeholder="0.0" id="lendAmt-${sym}" style="font-size:18px;"></div>
-                    <div class="btn-row">
-                        <button class="execute-btn" style="padding:8px; font-size:12px;" onclick="doLendDeposit('${sym}')">Deposit</button>
-                        <button class="execute-btn ghost" style="padding:8px; font-size:12px;" onclick="doLendWithdraw('${sym}')">Withdraw</button>
-                        <button class="execute-btn ghost" style="padding:8px; font-size:12px;" onclick="doLendClaim('${sym}')">Claim</button>
-                    </div>
-                </div>`;
-            }
-            container.innerHTML = html;
-        }
+        function analyzeWallet() {
+            const input = document.getElementById('wallet-search').value;
+            const btn = document.querySelector('.search-bar button');
+            if(input.length < 40) return alert("Please enter a valid EVM wallet address.");
 
-        window.doLendDeposit = async function(sym) {
-            const val = document.getElementById(`lendAmt-${sym}`).value;
-            if(!val || Number(val) <= 0) return alert("Enter amount!");
-            try {
-                const amt = parse(sym, val);
-                await ensureApproval(sym, LENDING_ADDRESS, amt);
-                const lending = new ethers.Contract(LENDING_ADDRESS, LENDING_ABI, signer);
-                const tx = await lending.deposit(TOKENS[sym].address, amt);
-                await tx.wait();
-                alert("Deposit Successful!");
-                await refreshBalances(); renderLendRows();
-            } catch(e) { alert("Deposit Failed!"); }
-        }
-
-        window.doLendWithdraw = async function(sym) {
-            const val = document.getElementById(`lendAmt-${sym}`).value;
-            if(!val || Number(val) <= 0) return alert("Enter amount!");
-            try {
-                const lending = new ethers.Contract(LENDING_ADDRESS, LENDING_ABI, signer);
-                const tx = await lending.withdraw(TOKENS[sym].address, parse(sym, val));
-                await tx.wait();
-                alert("Withdraw Successful!");
-                await refreshBalances(); renderLendRows();
-            } catch(e) { alert("Withdraw Failed!"); }
-        }
-
-        window.doLendClaim = async function(sym) {
-            try {
-                const lending = new ethers.Contract(LENDING_ADDRESS, LENDING_ABI, signer);
-                const tx = await lending.claimInterest(TOKENS[sym].address);
-                await tx.wait();
-                alert("Interest Claimed Successfully!");
-                await refreshBalances(); renderLendRows();
-            } catch(e) { alert("Claim Failed!"); }
-        }
-
-        async function renderBorrowRows() {
-            const cContainer = document.getElementById('collateralRows');
-            const bContainer = document.getElementById('borrowRows');
-            if (!userAddress) { cContainer.innerHTML = bContainer.innerHTML = '<div style="color:#aaa; text-align:center;">Connect wallet.</div>'; return; }
-            const lending = new ethers.Contract(LENDING_ADDRESS, LENDING_ABI, provider);
-
-            try {
-                const [cv, bv, mb] = await Promise.all([
-                    lending.getCollateralValueUSD(userAddress),
-                    lending.getBorrowValueUSD(userAddress),
-                    lending.getMaxBorrowableUSD(userAddress)
-                ]);
-                document.getElementById('collateralValueUSD').innerText = "$" + Number(ethers.utils.formatUnits(cv, 6)).toFixed(2);
-                document.getElementById('borrowValueUSD').innerText = "$" + Number(ethers.utils.formatUnits(bv, 6)).toFixed(2);
-                document.getElementById('maxBorrowUSD').innerText = "$" + Number(ethers.utils.formatUnits(mb, 6)).toFixed(2);
-            } catch(e) {}
-
-            let cHtml = "", bHtml = "";
-            for (const sym of TOKEN_LIST) {
-                let locked = 0n;
-                try { locked = await lending.collateral(userAddress, TOKENS[sym].address); } catch(e) {}
-                cHtml += `
-                <div class="token-row">
-                    <div class="token-row-head">
-                        <div class="token-chip"><span class="token-dot" style="background:${TOKENS[sym].color}">${sym[0]}</span>${sym}</div>
-                        <div class="token-stats">Wallet: ${(balances[sym]||0).toFixed(4)}<br>Locked: ${fmt(sym, locked).toFixed(4)}</div>
-                    </div>
-                    <div class="swap-row"><input type="number" placeholder="0.0" id="colAmt-${sym}" style="font-size:18px;"></div>
-                    <div class="btn-row">
-                        <button class="execute-btn" style="padding:8px; font-size:12px;" onclick="doDepositCollateral('${sym}')">Deposit</button>
-                        <button class="execute-btn ghost" style="padding:8px; font-size:12px;" onclick="doWithdrawCollateral('${sym}')">Withdraw</button>
-                    </div>
-                </div>`;
-
-                let bPrin = 0n;
-                try { const bRes = await lending.getBorrowBalance(userAddress, TOKENS[sym].address); bPrin = bRes[0]; } catch(e) {}
-                bHtml += `
-                <div class="token-row">
-                    <div class="token-row-head">
-                        <div class="token-chip"><span class="token-dot" style="background:${TOKENS[sym].color}">${sym[0]}</span>${sym}</div>
-                        <div class="token-stats">Borrowed: ${fmt(sym, bPrin).toFixed(4)}</div>
-                    </div>
-                    <div class="swap-row"><input type="number" placeholder="0.0" id="borAmt-${sym}" style="font-size:18px;"></div>
-                    <div class="btn-row">
-                        <button class="execute-btn" style="padding:8px; font-size:12px; background:#ffea00; color:#000;" onclick="doBorrow('${sym}')">Borrow</button>
-                        <button class="execute-btn ghost" style="padding:8px; font-size:12px;" onclick="doRepay('${sym}')">Repay</button>
-                    </div>
-                </div>`;
-            }
-            cContainer.innerHTML = cHtml;
-            bContainer.innerHTML = bHtml;
-        }
-
-        window.doDepositCollateral = async function(sym) {
-            const val = document.getElementById(`colAmt-${sym}`).value;
-            if(!val || Number(val) <= 0) return alert("Enter amount!");
-            try {
-                const amt = parse(sym, val);
-                await ensureApproval(sym, LENDING_ADDRESS, amt);
-                const lending = new ethers.Contract(LENDING_ADDRESS, LENDING_ABI, signer);
-                const tx = await lending.depositCollateral(TOKENS[sym].address, amt);
-                await tx.wait();
-                alert("Collateral Deposited!");
-                await refreshBalances(); renderBorrowRows();
-            } catch(e) { alert("Deposit Failed!"); }
-        }
-
-        window.doWithdrawCollateral = async function(sym) {
-            const val = document.getElementById(`colAmt-${sym}`).value;
-            if(!val || Number(val) <= 0) return alert("Enter amount!");
-            try {
-                const lending = new ethers.Contract(LENDING_ADDRESS, LENDING_ABI, signer);
-                const tx = await lending.withdrawCollateral(TOKENS[sym].address, parse(sym, val));
-                await tx.wait();
-                alert("Collateral Withdrawn!");
-                await refreshBalances(); renderBorrowRows();
-            } catch(e) { alert("Withdraw Failed!"); }
-        }
-
-        window.doBorrow = async function(sym) {
-            const val = document.getElementById(`borAmt-${sym}`).value;
-            if(!val || Number(val) <= 0) return alert("Enter amount!");
-            try {
-                const lending = new ethers.Contract(LENDING_ADDRESS, LENDING_ABI, signer);
-                const tx = await lending.borrow(TOKENS[sym].address, parse(sym, val));
-                await tx.wait();
-                alert("Borrow Successful!");
-                await refreshBalances(); renderBorrowRows();
-            } catch(e) { alert("Borrow Failed!"); }
-        }
-
-        window.doRepay = async function(sym) {
-            const val = document.getElementById(`borAmt-${sym}`).value;
-            if(!val || Number(val) <= 0) return alert("Enter amount!");
-            try {
-                const amt = parse(sym, val);
-                await ensureApproval(sym, LENDING_ADDRESS, amt);
-                const lending = new ethers.Contract(LENDING_ADDRESS, LENDING_ABI, signer);
-                const tx = await lending.repay(TOKENS[sym].address, amt);
-                await tx.wait();
-                alert("Repay Successful!");
-                await refreshBalances(); renderBorrowRows();
-            } catch(e) { alert("Repay Failed!"); }
-        }
-
-        function poolPair() {
-            const val = document.getElementById('poolSelect').value;
-            return val === "USDC-EURC" ? ["USDC","EURC"] : val === "USDC-CIRBTC" ? ["USDC","CIRBTC"] : ["EURC","CIRBTC"];
-        }
-        document.getElementById('poolSelect').addEventListener('change', renderLiquidityPanel);
-
-        async function renderLiquidityPanel() {
-            const [a, b] = poolPair();
-            document.getElementById('liqTokenALabel').innerText = a;
-            document.getElementById('liqTokenBLabel').innerText = b;
-            document.getElementById('liqBalanceA').innerText = (balances[a] !== undefined ? balances[a].toFixed(4) : "0.0000");
-            document.getElementById('liqBalanceB').innerText = (balances[b] !== undefined ? balances[b].toFixed(4) : "0.0000");
+            btn.innerText = "FETCHING...";
             
-            const liqBtn = document.getElementById('liqActionBtn');
-            if (!userAddress) { liqBtn.innerText = "CONNECT WALLET"; liqBtn.onclick = connectWallet; return; }
-            
-            liqBtn.innerText = "ADD LIQUIDITY";
-            liqBtn.onclick = doAddLiquidity;
-
-            if (provider) {
-                try {
-                    const swap = new ethers.Contract(MULTISWAP_ADDRESS, SWAP_ABI, provider);
-                    const [rA, rB] = await swap.getReserves(TOKENS[a].address, TOKENS[b].address);
-                    document.getElementById('liqReservesLine').innerText = `Reserves — ${fmt(a,rA).toFixed(4)} ${a} ⇌ ${fmt(b,rB).toFixed(4)} ${b}`;
-                } catch(e) { document.getElementById('liqReservesLine').innerText = "Reserves unavailable"; }
-            }
-        }
-
-        async function doAddLiquidity() {
-            const [a, b] = poolPair();
-            const va = document.getElementById('liqAmountA').value;
-            const vb = document.getElementById('liqAmountB').value;
-            if(!va || !vb || Number(va) <= 0 || Number(vb) <= 0) { alert("Enter valid amounts!"); return; }
-            
-            const liqBtn = document.getElementById('liqActionBtn');
-            liqBtn.disabled = true; liqBtn.innerText = "PROCESSING LIQUIDITY...";
-            try {
-                const amtA = parse(a, va);
-                const amtB = parse(b, vb);
-                const cA = tokenContract(a, signer);
-                const cB = tokenContract(b, signer);
-                if((await cA.allowance(userAddress, MULTISWAP_ADDRESS)).lt(amtA)) { await (await cA.approve(MULTISWAP_ADDRESS, MAX_UINT)).wait(); }
-                if((await cB.allowance(userAddress, MULTISWAP_ADDRESS)).lt(amtB)) { await (await cB.approve(MULTISWAP_ADDRESS, MAX_UINT)).wait(); }
-
-                const swap = new ethers.Contract(MULTISWAP_ADDRESS, SWAP_ABI, signer);
-                const tx = await swap.addLiquidity(TOKENS[a].address, TOKENS[b].address, amtA, amtB);
-                await tx.wait();
-                alert("Liquidity Added Successfully!");
-                document.getElementById('liqAmountA').value = "";
-                document.getElementById('liqAmountB').value = "";
-                await refreshBalances();
-                liqBtn.disabled = false; liqBtn.innerText = "ADD LIQUIDITY";
-            } catch(e) { alert("Adding Liquidity Failed!"); liqBtn.disabled = false; liqBtn.innerText = "ADD LIQUIDITY"; }
-        }
-
-        const body = document.body;
-        const projector = document.getElementById('projector');
-        const pText = document.getElementById('p-text');
-        const flash = document.getElementById('flash');
-        const swapTerminal = document.getElementById('swap-terminal');
-        const poolTerminal = document.getElementById('pool-terminal');
-        const lendTerminal = document.getElementById('lend-terminal');
-        const borrowTerminal = document.getElementById('borrow-terminal');
-        const faucetTerminal = document.getElementById('faucet-terminal');
-        
-        const dialRing = document.getElementById('dial-ring');
-        const centerText = document.getElementById('center-text');
-        
-        let isOn = false; 
-        let currentRotation = 0; 
-        let activeIndex = 0;
-        
-        const options = ["SWAP", "POOL", "LEND", "BORROW", "FAUCET", "ABOUT"];
-        const colors = ["#00ff66", "#00d4ff", "#b100ff", "#ffea00", "#ff3366", "#ffffff"];
-
-        function updateDialUI() {
-            dialRing.style.transform = `rotate(${currentRotation}deg)`;
-            const items = document.querySelectorAll('.dial-item');
-            items.forEach((item, idx) => {
-                const baseAngle = idx * 60;
-                item.style.transform = `rotate(${baseAngle}deg) translateY(-118px) rotate(${-currentRotation - baseAngle}deg)`;
-            });
-            centerText.innerText = options[activeIndex];
-            document.documentElement.style.setProperty('--theme-color', colors[activeIndex]);
-        }
-
-        window.executeSelection = function() {
-            if (!isOn) return;
-            playSlamSound(); // 3. WATCH STAMP / SLAM SOUND WHEN CLICKING CENTER
-            flash.classList.add('fire');
-            
+            // Simulating API call to Mimir subgraphs/ArcScan
             setTimeout(() => {
-                flash.classList.remove('fire');
-                body.classList.add('terminal-active');
-                if (activeIndex === 0) {
-                    swapTerminal.classList.add('open');
-                } else if (activeIndex === 1) {
-                    poolTerminal.classList.add('open');
-                    renderLiquidityPanel();
-                } else if (activeIndex === 2) {
-                    lendTerminal.classList.add('open');
-                    renderLendRows();
-                } else if (activeIndex === 3) {
-                    borrowTerminal.classList.add('open');
-                    renderBorrowRows();
-                } else if (activeIndex === 4) {
-                    faucetTerminal.classList.add('open');
-                } else {
-                    alert("About Protocol: TrixSwap Omniverse DEX Aggregator on ARC Network.");
-                    closeTerminals();
-                }
-            }, 150);
+                document.getElementById('table-title').innerText = `Recent Activity for ${input.slice(0,6)}...${input.slice(-4)}`;
+                document.getElementById('table-body').innerHTML = `
+                    <tr>
+                        <td class="market-name">Will ETH cross $4,000 by Sept 2026?</td>
+                        <td>Bought YES</td>
+                        <td style="color:var(--accent-green)">+ 500 USDC</td>
+                        <td>Just now</td>
+                        <td><span class="tag-yes">SUCCESS</span></td>
+                    </tr>
+                    <tr>
+                        <td class="market-name">Will Arc Mainnet launch before Q1 2027?</td>
+                        <td>Bought NO</td>
+                        <td style="color:var(--accent-red)">- 250 USDC</td>
+                        <td>2 hrs ago</td>
+                        <td><span class="tag-yes">SUCCESS</span></td>
+                    </tr>
+                `;
+                btn.innerText = "ANALYZE";
+            }, 1000);
         }
-
-        window.closeTerminals = function() {
-            swapTerminal.classList.remove('open');
-            poolTerminal.classList.remove('open');
-            lendTerminal.classList.remove('open');
-            borrowTerminal.classList.remove('open');
-            faucetTerminal.classList.remove('open');
-            body.classList.remove('terminal-active');
-            isOn = false; body.classList.remove('is-on');
-            pText.innerText = "TAP TO INITIALIZE";
-        }
-
-        projector.addEventListener('click', () => {
-            if (!isOn) { 
-                isOn = true; 
-                playWatchOnSound(); // 1. WATCH ON / POWER UP SOUND
-                body.classList.add('is-on'); 
-                pText.innerText = "SCROLL TO ROTATE | TAP CENTER"; 
-                updateDialUI(); 
-            } else { 
-                executeSelection(); 
-            }
-        });
-
-        window.addEventListener('wheel', (e) => {
-            if (isOn && !body.classList.contains('terminal-active')) {
-                playTickSound(); // 2. DIAL SCROLL / ALIEN SWITCH SOUND
-                if (e.deltaY > 0) {
-                    currentRotation -= 60;
-                    activeIndex = (activeIndex + 1) % 6;
-                } else {
-                    currentRotation += 60;
-                    activeIndex = (activeIndex - 1 + 6) % 6;
-                }
-                updateDialUI();
-            }
-        });
     </script>
 </body>
 </html>
